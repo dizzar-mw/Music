@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload New Track</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h2>Upload a New Song</h2>
+    <form id="uploadForm">
+        <input type="text" id="title" placeholder="Song Title" required><br><br>
+        <input type="text" id="artist" placeholder="Artist Name" required><br><br>
+        <textarea id="description" placeholder="Song Description"></textarea><br><br>
+        
+        <label>Audio File:</label>
+        <input type="file" id="audioFile" accept="audio/*" required><br><br>
+        
+        <label>Cover Art Picture:</label>
+        <input type="file" id="coverFile" accept="image/*" required><br><br>
+        
+        <button type="submit" id="submitBtn">Publish Song</button>
+    </form>
+
+    <script>
+        // Replace with your actual Supabase project credentials
+        const SUPABASE_URL = "https://your-project-id.supabase.co";
+        const SUPABASE_ANON_KEY = "your-anon-public-key";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Uploading...";
+            btn.disabled = true;
+
+            const title = document.getElementById('title').value;
+            const artist = document.getElementById('artist').value;
+            const description = document.getElementById('description').value;
+            const audioFile = document.getElementById('audioFile').files[0];
+            const coverFile = document.getElementById('coverFile').files[0];
+
+            try {
+                // 1. Upload Audio File
+                const audioPath = `audio/${Date.now()}_${audioFile.name}`;
+                let { error: audioErr } = await supabase.storage.from('music-vault').upload(audioPath, audioFile);
+                if (audioErr) throw audioErr;
+                const audioUrl = supabase.storage.from('music-vault').getPublicUrl(audioPath).data.publicUrl;
+
+                // 2. Upload Cover Image
+                const coverPath = `covers/${Date.now()}_${coverFile.name}`;
+                let { error: coverErr } = await supabase.storage.from('music-vault').upload(coverPath, coverFile);
+                if (coverErr) throw coverErr;
+                const coverUrl = supabase.storage.from('music-vault').getPublicUrl(coverPath).data.publicUrl;
+
+                // 3. Save Metadata to Database
+                const { error: dbErr } = await supabase.from('songs').insert([
+                    { title, artist, description, audio_url: audioUrl, cover_url: coverUrl }
+                ]);
+                if (dbErr) throw dbErr;
+
+                alert("Song published successfully!");
+                document.getElementById('uploadForm').reset();
+            } catch (err) {
+                console.error(err);
+                alert("Upload failed: " + err.message);
+            } finally {
+                btn.innerText = "Publish Song";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
