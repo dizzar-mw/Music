@@ -22,10 +22,17 @@
     </form>
 
     <script>
-        // Replace with your actual Supabase project credentials
+    
+
+
+        
         const SUPABASE_URL = "https://einlaadkrziqmjtsakzu.supabase.co";
-        const SUPABASE_ANON_KEY = "your-anon-public-key";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpbmxhYWRrcnppcW1qdHNha3p1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNDkzNjgsImV4cCI6MjA5NTcyNTM2OH0.O72QUs345BrWvzHq6ZxpuhPlYffDqP8LEp1wIb2R8P4";
+
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
+        
 
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
