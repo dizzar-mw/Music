@@ -180,59 +180,85 @@
         </div>
     </div>
 
-    <script>
-        // --- SUPABASE CONFIGURATION ---
-        const SUPABASE_URL = "https://einlaadkrziqmjtsakzu.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpbmxhYWRrcnppcW1qdHNha3p1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNDkzNjgsImV4cCI6MjA5NTcyNTM2OH0.O72QUs345BrWvzHq6ZxpuhPlYffDqP8LEp1wIb2R8P4";
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // --- NAVIGATION LOGIC ---
-        function switchView(viewId) {
-            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+<script>
+    // --- 1. NAVIGATION LOGIC (Safely separated) ---
+    function switchView(viewId) {
+        try {
+            // Hide all sections
+            document.querySelectorAll('.view-section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            // Show the target section
             document.getElementById(viewId + '-view').classList.add('active');
-            if (viewId === 'home') fetchSongs(); // Refresh list when going to home
+            
+            // Refresh songs if going home
+            if (viewId === 'home' && typeof fetchSongs === 'function') {
+                fetchSongs(); 
+            }
+        } catch (err) {
+            console.error("Navigation Error:", err);
+            alert("Something broke in the layout! Check the console.");
         }
+    }
 
-        // --- PLAYER LOGIC ---
-        const audioElement = document.getElementById('main-audio');
-        const coverImg = document.getElementById('player-cover');
-        const playerContainer = document.getElementById('bottom-player');
+    // --- 2. SUPABASE CONFIGURATION ---
+    const SUPABASE_URL = "https://einlaadkrziqmjtsakzu.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpbmxhYWRrcnppcW1qdHNha3p1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNDkzNjgsImV4cCI6MjA5NTcyNTM2OH0.O72QUs345BrWvzHq6ZxpuhPlYffDqP8LEp1wIb2R8P4";
+    
+    let supabase;
+    try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch (err) {
+        console.error("Supabase failed to initialize. Are you connected to the internet?", err);
+    }
+
+    // --- 3. PLAYER LOGIC ---
+    const audioElement = document.getElementById('main-audio');
+    const coverImg = document.getElementById('player-cover');
+    const playerContainer = document.getElementById('bottom-player');
+    
+    function playTrack(title, artist, coverUrl, audioUrl) {
+        document.getElementById('player-title').innerText = title;
+        document.getElementById('player-artist').innerText = artist;
+        coverImg.src = coverUrl;
+        audioElement.src = audioUrl;
         
-        function playTrack(title, artist, coverUrl, audioUrl) {
-            document.getElementById('player-title').innerText = title;
-            document.getElementById('player-artist').innerText = artist;
-            coverImg.src = coverUrl;
-            audioElement.src = audioUrl;
-            
-            playerContainer.classList.add('visible');
-            playerContainer.classList.remove('hidden');
-            document.getElementById('toggleBtn').innerText = "▼ Hide Player";
-            
-            audioElement.play();
-        }
+        playerContainer.classList.add('visible');
+        playerContainer.classList.remove('hidden');
+        document.getElementById('toggleBtn').innerText = "▼ Hide Player";
+        
+        audioElement.play();
+    }
 
-        // Spinning Record Animation Logic
+    if (audioElement) {
         audioElement.addEventListener('play', () => coverImg.classList.add('playing'));
         audioElement.addEventListener('pause', () => coverImg.classList.remove('playing'));
         audioElement.addEventListener('ended', () => coverImg.classList.remove('playing'));
+    }
 
-        function togglePlayer() {
-            if (playerContainer.classList.contains('hidden')) {
-                playerContainer.classList.remove('hidden');
-                document.getElementById('toggleBtn').innerText = "▼ Hide Player";
-            } else {
-                playerContainer.classList.add('hidden');
-                document.getElementById('toggleBtn').innerText = "▲ Show Player";
-            }
+    function togglePlayer() {
+        if (playerContainer.classList.contains('hidden')) {
+            playerContainer.classList.remove('hidden');
+            document.getElementById('toggleBtn').innerText = "▼ Hide Player";
+        } else {
+            playerContainer.classList.add('hidden');
+            document.getElementById('toggleBtn').innerText = "▲ Show Player";
         }
+    }
 
-        // --- FETCH & RENDER SONGS ---
-        async function fetchSongs() {
-            const container = document.getElementById('musicContainer');
+    // --- 4. FETCH & RENDER SONGS ---
+    async function fetchSongs() {
+        if (!supabase) return;
+        const container = document.getElementById('musicContainer');
+        try {
             const { data: songs, error } = await supabase.from('songs').select('*').order('created_at', { ascending: false });
 
-            if (error) { console.error("Error fetching data"); return; }
-            if (songs.length === 0) { container.innerHTML = "<p>No tracks uploaded yet.</p>"; return; }
+            if (error) throw error;
+            
+            if (songs.length === 0) { 
+                container.innerHTML = "<p>No tracks uploaded yet.</p>"; 
+                return; 
+            }
 
             container.innerHTML = ""; 
             songs.forEach(song => {
@@ -248,13 +274,18 @@
                 `;
                 container.appendChild(card);
             });
+        } catch (err) {
+            console.error("Database fetch error:", err);
+            container.innerHTML = "<p style='color: #ff007f;'>Could not load tracks. Check your Supabase database connection.</p>";
         }
+    }
 
-        // --- UPLOAD LOGIC WITH RADIO LOADER ---
-        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+    // --- 5. UPLOAD LOGIC ---
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // UI setup for loading
             const form = document.getElementById('uploadForm');
             const loader = document.getElementById('loader');
             const loaderText = document.getElementById('loaderText');
@@ -269,13 +300,13 @@
             const coverFile = document.getElementById('coverFile').files[0];
 
             try {
-                loaderText.innerText = "Transmitting Audio Frequencies... (Uploading)";
+                loaderText.innerText = "Transmitting Audio Frequencies...";
                 const audioPath = `audio/${Date.now()}_${audioFile.name}`;
                 let { error: audioErr } = await supabase.storage.from('music-vault').upload(audioPath, audioFile);
                 if (audioErr) throw audioErr;
                 const audioUrl = supabase.storage.from('music-vault').getPublicUrl(audioPath).data.publicUrl;
 
-                loaderText.innerText = "Painting Cover Art... (Uploading)";
+                loaderText.innerText = "Painting Cover Art...";
                 const coverPath = `covers/${Date.now()}_${coverFile.name}`;
                 let { error: coverErr } = await supabase.storage.from('music-vault').upload(coverPath, coverFile);
                 if (coverErr) throw coverErr;
@@ -289,7 +320,7 @@
 
                 alert("Track successfully published to the web!");
                 form.reset();
-                switchView('home'); // Send them back to the gallery to see their new song!
+                switchView('home');
             } catch (err) {
                 console.error(err);
                 alert("Upload failed: " + err.message);
@@ -298,9 +329,10 @@
                 loader.style.display = 'none';
             }
         });
+    }
 
-        // Initialize App
-        fetchSongs();
-    </script>
+    // Initialize App
+    fetchSongs();
+</script>
 </body>
 </html>
