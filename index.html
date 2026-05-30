@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Music Player Website</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .song-card { border: 1px solid #ccc; padding: 15px; margin: 10px; display: flex; align-items: center; gap: 20px; border-radius: 8px; }
+        .song-card img { width: 100px; height: 100px; object-fit: cover; border-radius: 4px; }
+        .details { display: flex; flex-direction: column; }
+    </style>
+</head>
+<body>
+    <h1>Latest Tracks</h1>
+    <div id="musicContainer">Loading tracks...</div>
+
+    <script>
+        const SUPABASE_URL = "https://your-project-id.supabase.co";
+        const SUPABASE_ANON_KEY = "your-anon-public-key";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function fetchSongs() {
+            const container = document.getElementById('musicContainer');
+            
+            // Fetch records ordered by newest first
+            const { data: songs, error } = await supabase
+                .from('songs')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                container.innerHTML = "Error loading music.";
+                console.error(error);
+                return;
+            }
+
+            if (songs.length === 0) {
+                container.innerHTML = "No songs available yet.";
+                return;
+            }
+
+            container.innerHTML = ""; // Clear loader
+            
+            songs.forEach(song => {
+                const card = document.createElement('div');
+                card.className = 'song-card';
+                card.innerHTML = `
+                    <img src="${song.cover_url}" alt="Cover Art">
+                    <div class="details">
+                        <h3>${song.title}</h3>
+                        <p><strong>Artist:</strong> ${song.artist}</p>
+                        <p>${song.description || 'No description provided.'}</p>
+                        <audio controls src="${song.audio_url}"></audio>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Run on page load
+        fetchSongs();
+    </script>
+</body>
+  </html>
