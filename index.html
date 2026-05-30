@@ -2,64 +2,305 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Music Player Website</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dippobie Crew | Music Hub</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .song-card { border: 1px solid #ccc; padding: 15px; margin: 10px; display: flex; align-items: center; gap: 20px; border-radius: 8px; }
-        .song-card img { width: 100px; height: 100px; object-fit: cover; border-radius: 4px; }
-        .details { display: flex; flex-direction: column; }
+        /* --- GLOBAL STYLES & ANIMATIONS --- */
+        :root {
+            --primary: #ff007f;
+            --secondary: #7928ca;
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --bg-dark: #0f0c29;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            min-height: 100vh;
+            background-attachment: fixed;
+            overflow-x: hidden;
+            padding-bottom: 100px; /* Space for fixed player */
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulseRadio { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 127, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(255, 0, 127, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 127, 0); } }
+
+        /* --- NAVIGATION --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav h1 { font-size: 1.5rem; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; color: transparent; }
+        
+        .nav-links button {
+            background: none; border: none; color: white; font-size: 1.1rem; cursor: pointer; margin-left: 20px; transition: color 0.3s;
+        }
+        .nav-links button:hover { color: var(--primary); }
+
+        /* --- VIEWS --- */
+        .view-section { display: none; padding: 40px; animation: fadeIn 0.5s ease-out; }
+        .view-section.active { display: block; }
+
+        /* --- SPONSOR BANNER --- */
+        .sponsor-banner {
+            background: linear-gradient(90deg, rgba(121,40,202,0.3), rgba(255,0,127,0.3));
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 0 40px 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .sponsor-banner h3 { color: #fff; margin-bottom: 5px; }
+        .sponsor-banner p { color: #ccc; font-size: 0.9rem; }
+        .sponsor-btn {
+            background: var(--primary); color: white; padding: 10px 20px; text-decoration: none; border-radius: 25px; font-weight: bold; transition: 0.3s;
+        }
+        .sponsor-btn:hover { background: var(--secondary); box-shadow: 0 0 15px var(--secondary); }
+
+        /* --- HOME GALLERY --- */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
+        .card {
+            background: var(--glass); border: 1px solid var(--glass-border); border-radius: 15px; padding: 15px; text-align: center; backdrop-filter: blur(10px); transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .card h3 { font-size: 1.2rem; margin-bottom: 5px; }
+        .card p { color: #bbb; font-size: 0.9rem; margin-bottom: 15px; }
+        .play-btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; width: 100%; font-weight: bold; transition: background 0.3s; }
+        .play-btn:hover { background: var(--secondary); }
+
+        /* --- UPLOAD FORM & LOADER --- */
+        .upload-container { max-width: 600px; margin: 0 auto; background: var(--glass); padding: 30px; border-radius: 15px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); }
+        .upload-container input, .upload-container textarea {
+            width: 100%; padding: 12px; margin-bottom: 20px; background: rgba(0,0,0,0.3); border: 1px solid #555; color: white; border-radius: 8px; outline: none;
+        }
+        .upload-container input:focus, .upload-container textarea:focus { border-color: var(--primary); }
+        .submit-btn { background: linear-gradient(to right, var(--primary), var(--secondary)); border: none; padding: 15px; color: white; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        
+        .loader-wrapper { display: none; text-align: center; margin-top: 20px; }
+        .radio-loader {
+            width: 50px; height: 50px; background: var(--primary); border-radius: 50%; margin: 0 auto 10px auto; animation: pulseRadio 1.5s infinite;
+        }
+
+        /* --- FIXED BOTTOM PLAYER --- */
+        #bottom-player {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); border-top: 1px solid var(--glass-border); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; transform: translateY(100%); /* Hidden by default */
+        }
+        #bottom-player.visible { transform: translateY(0); }
+        #bottom-player.hidden { transform: translateY(calc(100% - 30px)); } /* Leaves a sliver visible */
+        
+        .track-info { display: flex; align-items: center; gap: 15px; width: 30%; }
+        .track-info img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; animation: spin 8s linear infinite; animation-play-state: paused; }
+        .track-info img.playing { animation-play-state: running; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        .player-controls { flex-grow: 1; display: flex; justify-content: center; }
+        audio { width: 100%; max-width: 500px; outline: none; }
+        
+        .toggle-player-btn { background: none; border: none; color: #fff; cursor: pointer; position: absolute; top: -30px; right: 40px; background: var(--primary); padding: 5px 15px; border-radius: 10px 10px 0 0; font-size: 0.9rem; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h1>Latest Tracks</h1>
-    <div id="musicContainer">Loading tracks...</div>
+
+    <nav>
+        <h1>Dippobie Studio</h1>
+        <div class="nav-links">
+            <button onclick="switchView('home')">Library</button>
+            <button onclick="switchView('upload')">Upload</button>
+        </div>
+    </nav>
+
+    <div class="sponsor-banner">
+        <div>
+            <h3>Proudly Sponsored by Desire Mapira</h3>
+            <p>Artist & Founder of <strong>FiliruPaints</strong> — Premium painting, custom portraits, and creative art services.</p>
+        </div>
+        <a href="https://your-filirupaints-link.com" target="_blank" class="sponsor-btn">Visit FiliruPaints</a>
+    </div>
+
+    <main>
+        <section id="home-view" class="view-section active">
+            <h2 style="margin-bottom: 25px;">Latest Drops</h2>
+            <div id="musicContainer" class="grid">
+                </div>
+        </section>
+
+        <section id="upload-view" class="view-section">
+            <div class="upload-container">
+                <h2 style="margin-bottom: 20px;">Publish a New Track</h2>
+                <form id="uploadForm">
+                    <input type="text" id="title" placeholder="Song Title" required>
+                    <input type="text" id="artist" placeholder="Artist Name" required>
+                    <textarea id="description" placeholder="Vibe / Description" rows="3"></textarea>
+                    
+                    <label style="color:#ccc; display:block; margin-bottom:5px;">Audio File (MP3/WAV)</label>
+                    <input type="file" id="audioFile" accept="audio/*" required>
+                    
+                    <label style="color:#ccc; display:block; margin-bottom:5px;">Cover Art</label>
+                    <input type="file" id="coverFile" accept="image/*" required>
+                    
+                    <button type="submit" id="submitBtn" class="submit-btn">Upload & Publish</button>
+                </form>
+
+                <div id="loader" class="loader-wrapper">
+                    <div class="radio-loader"></div>
+                    <p id="loaderText">Establishing connection...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="bottom-player">
+        <button class="toggle-player-btn" onclick="togglePlayer()" id="toggleBtn">▼ Hide Player</button>
+        <div class="track-info">
+            <img id="player-cover" src="https://via.placeholder.com/60" alt="Cover">
+            <div>
+                <h4 id="player-title">Select a track</h4>
+                <p id="player-artist" style="font-size: 0.8rem; color: #ccc;">...</p>
+            </div>
+        </div>
+        <div class="player-controls">
+            <audio id="main-audio" controls></audio>
+        </div>
+    </div>
 
     <script>
+        // --- SUPABASE CONFIGURATION ---
         const SUPABASE_URL = "https://einlaadkrziqmjtsakzu.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpbmxhYWRrcnppcW1qdHNha3p1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNDkzNjgsImV4cCI6MjA5NTcyNTM2OH0.O72QUs345BrWvzHq6ZxpuhPlYffDqP8LEp1wIb2R8P4";
-
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // --- NAVIGATION LOGIC ---
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(viewId + '-view').classList.add('active');
+            if (viewId === 'home') fetchSongs(); // Refresh list when going to home
+        }
+
+        // --- PLAYER LOGIC ---
+        const audioElement = document.getElementById('main-audio');
+        const coverImg = document.getElementById('player-cover');
+        const playerContainer = document.getElementById('bottom-player');
+        
+        function playTrack(title, artist, coverUrl, audioUrl) {
+            document.getElementById('player-title').innerText = title;
+            document.getElementById('player-artist').innerText = artist;
+            coverImg.src = coverUrl;
+            audioElement.src = audioUrl;
+            
+            playerContainer.classList.add('visible');
+            playerContainer.classList.remove('hidden');
+            document.getElementById('toggleBtn').innerText = "▼ Hide Player";
+            
+            audioElement.play();
+        }
+
+        // Spinning Record Animation Logic
+        audioElement.addEventListener('play', () => coverImg.classList.add('playing'));
+        audioElement.addEventListener('pause', () => coverImg.classList.remove('playing'));
+        audioElement.addEventListener('ended', () => coverImg.classList.remove('playing'));
+
+        function togglePlayer() {
+            if (playerContainer.classList.contains('hidden')) {
+                playerContainer.classList.remove('hidden');
+                document.getElementById('toggleBtn').innerText = "▼ Hide Player";
+            } else {
+                playerContainer.classList.add('hidden');
+                document.getElementById('toggleBtn').innerText = "▲ Show Player";
+            }
+        }
+
+        // --- FETCH & RENDER SONGS ---
         async function fetchSongs() {
             const container = document.getElementById('musicContainer');
-            
-            // Fetch records ordered by newest first
-            const { data: songs, error } = await supabase
-                .from('songs')
-                .select('*')
-                .order('created_at', { ascending: false });
+            const { data: songs, error } = await supabase.from('songs').select('*').order('created_at', { ascending: false });
 
-            if (error) {
-                container.innerHTML = "Error loading music.";
-                console.error(error);
-                return;
-            }
+            if (error) { console.error("Error fetching data"); return; }
+            if (songs.length === 0) { container.innerHTML = "<p>No tracks uploaded yet.</p>"; return; }
 
-            if (songs.length === 0) {
-                container.innerHTML = "No songs available yet.";
-                return;
-            }
-
-            container.innerHTML = ""; // Clear loader
-            
+            container.innerHTML = ""; 
             songs.forEach(song => {
                 const card = document.createElement('div');
-                card.className = 'song-card';
+                card.className = 'card';
                 card.innerHTML = `
-                    <img src="${song.cover_url}" alt="Cover Art">
-                    <div class="details">
-                        <h3>${song.title}</h3>
-                        <p><strong>Artist:</strong> ${song.artist}</p>
-                        <p>${song.description || 'No description provided.'}</p>
-                        <audio controls src="${song.audio_url}"></audio>
-                    </div>
+                    <img src="${song.cover_url}" alt="Cover">
+                    <h3>${song.title}</h3>
+                    <p>${song.artist}</p>
+                    <button class="play-btn" onclick="playTrack('${song.title.replace(/'/g, "\\'")}', '${song.artist.replace(/'/g, "\\'")}', '${song.cover_url}', '${song.audio_url}')">
+                        ▶ Play Now
+                    </button>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // Run on page load
+        // --- UPLOAD LOGIC WITH RADIO LOADER ---
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // UI setup for loading
+            const form = document.getElementById('uploadForm');
+            const loader = document.getElementById('loader');
+            const loaderText = document.getElementById('loaderText');
+            
+            form.style.display = 'none';
+            loader.style.display = 'block';
+
+            const title = document.getElementById('title').value;
+            const artist = document.getElementById('artist').value;
+            const description = document.getElementById('description').value;
+            const audioFile = document.getElementById('audioFile').files[0];
+            const coverFile = document.getElementById('coverFile').files[0];
+
+            try {
+                loaderText.innerText = "Transmitting Audio Frequencies... (Uploading)";
+                const audioPath = `audio/${Date.now()}_${audioFile.name}`;
+                let { error: audioErr } = await supabase.storage.from('music-vault').upload(audioPath, audioFile);
+                if (audioErr) throw audioErr;
+                const audioUrl = supabase.storage.from('music-vault').getPublicUrl(audioPath).data.publicUrl;
+
+                loaderText.innerText = "Painting Cover Art... (Uploading)";
+                const coverPath = `covers/${Date.now()}_${coverFile.name}`;
+                let { error: coverErr } = await supabase.storage.from('music-vault').upload(coverPath, coverFile);
+                if (coverErr) throw coverErr;
+                const coverUrl = supabase.storage.from('music-vault').getPublicUrl(coverPath).data.publicUrl;
+
+                loaderText.innerText = "Securing into Database...";
+                const { error: dbErr } = await supabase.from('songs').insert([
+                    { title, artist, description, audio_url: audioUrl, cover_url: coverUrl }
+                ]);
+                if (dbErr) throw dbErr;
+
+                alert("Track successfully published to the web!");
+                form.reset();
+                switchView('home'); // Send them back to the gallery to see their new song!
+            } catch (err) {
+                console.error(err);
+                alert("Upload failed: " + err.message);
+            } finally {
+                form.style.display = 'block';
+                loader.style.display = 'none';
+            }
+        });
+
+        // Initialize App
         fetchSongs();
     </script>
 </body>
-  </html>
+</html>
