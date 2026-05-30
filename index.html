@@ -222,10 +222,35 @@
         }
 
         // --- 3. UI VIEW SWITCHER ---
-        function switchView(viewId) {
-            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(viewId + '-view').classList.add('active');
-            if (viewId === 'home') fetchSongs(); 
+// --- 3. UI VIEW SWITCHER (Brute Force Version) ---
+function switchView(viewId) {
+    console.log("Attempting to load view: " + viewId); // Helps us debug
+    
+    // 1. Look for the specific section you want to open
+    const targetSection = document.getElementById(viewId + '-view');
+    
+    if (!targetSection) {
+        console.error("CRITICAL ERROR: Could not find HTML section with id='" + viewId + "-view'");
+        showToast("Layout error: Missing section in HTML.", "error");
+        return; // Stop the script here before it crashes
+    }
+
+    // 2. Hide absolutely every section
+    const allSections = document.querySelectorAll('.view-section');
+    allSections.forEach(sec => {
+        sec.classList.remove('active');
+        sec.style.display = 'none'; // Force hide it ignoring CSS
+    });
+
+    // 3. Reveal the one section you clicked
+    targetSection.classList.add('active');
+    targetSection.style.display = 'block'; // Force show it ignoring CSS
+
+    // 4. Refresh music if navigating back to the Library
+    if (viewId === 'home') {
+        fetchSongs(); 
+    }
+}
         }
 
         // --- 4. PLAYER LOGIC ---
