@@ -6,13 +6,15 @@
     <title>Dippobie Crew | Music Hub</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* --- GLOBAL STYLES & ANIMATIONS --- */
+        /* --- GLOBAL STYLES --- */
         :root {
             --primary: #ff007f;
             --secondary: #7928ca;
             --glass: rgba(255, 255, 255, 0.08);
             --glass-border: rgba(255, 255, 255, 0.2);
             --bg-dark: #0f0c29;
+            --error: #ff4d4d;
+            --success: #00cc66;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -23,87 +25,71 @@
             min-height: 100vh;
             background-attachment: fixed;
             overflow-x: hidden;
-            padding-bottom: 100px; /* Space for fixed player */
+            padding-bottom: 120px;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulseRadio { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 127, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(255, 0, 127, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 127, 0); } }
+
+        /* --- NOTIFICATION TOAST --- */
+        #toast-container {
+            position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            padding: 15px 25px; border-radius: 8px; color: white; font-weight: bold; backdrop-filter: blur(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); animation: fadeIn 0.3s ease-out; transition: opacity 0.5s;
+        }
+        .toast.error { background: rgba(255, 77, 77, 0.9); border: 1px solid var(--error); }
+        .toast.success { background: rgba(0, 204, 102, 0.9); border: 1px solid var(--success); }
 
         /* --- NAVIGATION --- */
         nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--glass-border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 100;
         }
-
         nav h1 { font-size: 1.5rem; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; color: transparent; }
-        
-        .nav-links button {
-            background: none; border: none; color: white; font-size: 1.1rem; cursor: pointer; margin-left: 20px; transition: color 0.3s;
-        }
+        .nav-links button { background: none; border: none; color: white; font-size: 1.1rem; cursor: pointer; margin-left: 20px; transition: color 0.3s; }
         .nav-links button:hover { color: var(--primary); }
 
         /* --- VIEWS --- */
-        .view-section { display: none; padding: 40px; animation: fadeIn 0.5s ease-out; }
+        .view-section { display: none; padding: 40px; animation: fadeIn 0.4s ease-out; }
         .view-section.active { display: block; }
 
         /* --- SPONSOR BANNER --- */
         .sponsor-banner {
-            background: linear-gradient(90deg, rgba(121,40,202,0.3), rgba(255,0,127,0.3));
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 0 40px 30px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(5px);
+            background: linear-gradient(90deg, rgba(121,40,202,0.3), rgba(255,0,127,0.3)); border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px; margin: 0 40px 30px 40px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(5px);
         }
         .sponsor-banner h3 { color: #fff; margin-bottom: 5px; }
-        .sponsor-banner p { color: #ccc; font-size: 0.9rem; }
-        .sponsor-btn {
-            background: var(--primary); color: white; padding: 10px 20px; text-decoration: none; border-radius: 25px; font-weight: bold; transition: 0.3s;
-        }
+        .sponsor-banner p { color: #ccc; font-size: 0.95rem; line-height: 1.4; }
+        .sponsor-btn { background: var(--primary); color: white; padding: 10px 20px; text-decoration: none; border-radius: 25px; font-weight: bold; transition: 0.3s; text-align: center; }
         .sponsor-btn:hover { background: var(--secondary); box-shadow: 0 0 15px var(--secondary); }
 
         /* --- HOME GALLERY --- */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
-        .card {
-            background: var(--glass); border: 1px solid var(--glass-border); border-radius: 15px; padding: 15px; text-align: center; backdrop-filter: blur(10px); transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .card h3 { font-size: 1.2rem; margin-bottom: 5px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
+        .card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 15px; padding: 15px; text-align: center; transition: transform 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; margin-bottom: 15px; }
+        .card h3 { font-size: 1.2rem; margin-bottom: 5px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
         .card p { color: #bbb; font-size: 0.9rem; margin-bottom: 15px; }
         .play-btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; width: 100%; font-weight: bold; transition: background 0.3s; }
         .play-btn:hover { background: var(--secondary); }
 
-        /* --- UPLOAD FORM & LOADER --- */
-        .upload-container { max-width: 600px; margin: 0 auto; background: var(--glass); padding: 30px; border-radius: 15px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); }
-        .upload-container input, .upload-container textarea {
-            width: 100%; padding: 12px; margin-bottom: 20px; background: rgba(0,0,0,0.3); border: 1px solid #555; color: white; border-radius: 8px; outline: none;
-        }
+        /* --- UPLOAD FORM --- */
+        .upload-container { max-width: 600px; margin: 0 auto; background: var(--glass); padding: 30px; border-radius: 15px; border: 1px solid var(--glass-border); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #ccc; font-size: 0.9rem; }
+        .upload-container input, .upload-container textarea { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid #555; color: white; border-radius: 8px; outline: none; }
         .upload-container input:focus, .upload-container textarea:focus { border-color: var(--primary); }
         .submit-btn { background: linear-gradient(to right, var(--primary), var(--secondary)); border: none; padding: 15px; color: white; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
         
-        .loader-wrapper { display: none; text-align: center; margin-top: 20px; }
-        .radio-loader {
-            width: 50px; height: 50px; background: var(--primary); border-radius: 50%; margin: 0 auto 10px auto; animation: pulseRadio 1.5s infinite;
-        }
+        /* Loader */
+        .loader-wrapper { display: none; text-align: center; padding: 40px 0; }
+        .radio-loader { width: 50px; height: 50px; background: var(--primary); border-radius: 50%; margin: 0 auto 20px auto; animation: pulseRadio 1.5s infinite; }
 
         /* --- FIXED BOTTOM PLAYER --- */
         #bottom-player {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); border-top: 1px solid var(--glass-border); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; transform: translateY(100%); /* Hidden by default */
+            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10, 10, 15, 0.98); border-top: 1px solid var(--glass-border); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; transition: transform 0.4s ease; z-index: 1000; transform: translateY(100%);
         }
         #bottom-player.visible { transform: translateY(0); }
-        #bottom-player.hidden { transform: translateY(calc(100% - 30px)); } /* Leaves a sliver visible */
+        #bottom-player.hidden { transform: translateY(calc(100% - 30px)); }
         
         .track-info { display: flex; align-items: center; gap: 15px; width: 30%; }
         .track-info img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; animation: spin 8s linear infinite; animation-play-state: paused; }
@@ -111,27 +97,37 @@
         @keyframes spin { 100% { transform: rotate(360deg); } }
         
         .player-controls { flex-grow: 1; display: flex; justify-content: center; }
-        audio { width: 100%; max-width: 500px; outline: none; }
+        audio { width: 100%; max-width: 600px; outline: none; }
         
-        .toggle-player-btn { background: none; border: none; color: #fff; cursor: pointer; position: absolute; top: -30px; right: 40px; background: var(--primary); padding: 5px 15px; border-radius: 10px 10px 0 0; font-size: 0.9rem; font-weight: bold; }
+        .toggle-player-btn { position: absolute; top: -30px; right: 40px; background: var(--primary); border: none; color: white; padding: 5px 15px; border-radius: 10px 10px 0 0; cursor: pointer; font-weight: bold; }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            nav, .sponsor-banner { margin: 10px; padding: 15px; flex-direction: column; text-align: center; gap: 15px; }
+            #bottom-player { flex-direction: column; padding: 15px; gap: 15px; }
+            .track-info { width: 100%; justify-content: center; text-align: center; }
+            .toggle-player-btn { right: 50%; transform: translateX(50%); }
+        }
     </style>
 </head>
 <body>
+
+    <div id="toast-container"></div>
 
     <nav>
         <h1>Dippobie Studio</h1>
         <div class="nav-links">
             <button onclick="switchView('home')">Library</button>
-            <button onclick="switchView('upload')">Upload</button>
+            <button onclick="switchView('upload')">Upload Track</button>
         </div>
     </nav>
 
     <div class="sponsor-banner">
         <div>
-            <h3>Proudly Sponsored by Desire Mapira</h3>
-            <p>Artist & Founder of <strong>FiliruPaints</strong> — Premium painting, custom portraits, and creative art services.</p>
+            <h3>Proudly Sponsored by Dizzar-mw</h3>
+            <p>Artist & Founder of <strong>FiliruPaints</strong> — Specializing in custom portraits, sign writing, and professional painting services.</p>
         </div>
-        <a href="https://your-filirupaints-link.com" target="_blank" class="sponsor-btn">Visit FiliruPaints</a>
+        <a href="#" class="sponsor-btn">Visit FiliruPaints</a>
     </div>
 
     <main>
@@ -143,24 +139,41 @@
 
         <section id="upload-view" class="view-section">
             <div class="upload-container">
-                <h2 style="margin-bottom: 20px;">Publish a New Track</h2>
+                <h2 style="margin-bottom: 25px;">Publish to the Web</h2>
+                
                 <form id="uploadForm">
-                    <input type="text" id="title" placeholder="Song Title" required>
-                    <input type="text" id="artist" placeholder="Artist Name" required>
-                    <textarea id="description" placeholder="Vibe / Description" rows="3"></textarea>
+                    <div class="form-group">
+                        <label>Song Title</label>
+                        <input type="text" id="title" required placeholder="e.g., Fuso">
+                    </div>
                     
-                    <label style="color:#ccc; display:block; margin-bottom:5px;">Audio File (MP3/WAV)</label>
-                    <input type="file" id="audioFile" accept="audio/*" required>
+                    <div class="form-group">
+                        <label>Artist Name</label>
+                        <input type="text" id="artist" required value="Dizzar-mw ft. ">
+                    </div>
                     
-                    <label style="color:#ccc; display:block; margin-bottom:5px;">Cover Art</label>
-                    <input type="file" id="coverFile" accept="image/*" required>
+                    <div class="form-group">
+                        <label>Track Description</label>
+                        <textarea id="description" rows="3" placeholder="Describe the vibe..."></textarea>
+                    </div>
                     
-                    <button type="submit" id="submitBtn" class="submit-btn">Upload & Publish</button>
+                    <div class="form-group">
+                        <label>Audio File (MP3/WAV - Max 50MB)</label>
+                        <input type="file" id="audioFile" accept="audio/*" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Cover Art Picture (JPG/PNG - Max 5MB)</label>
+                        <input type="file" id="coverFile" accept="image/*" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Upload & Publish</button>
                 </form>
 
                 <div id="loader" class="loader-wrapper">
                     <div class="radio-loader"></div>
-                    <p id="loaderText">Establishing connection...</p>
+                    <h3 id="loaderText" style="color: var(--primary);">Establishing connection...</h3>
+                    <p style="color: #ccc; margin-top: 10px;">Please do not close this page.</p>
                 </div>
             </div>
         </section>
@@ -169,10 +182,10 @@
     <div id="bottom-player">
         <button class="toggle-player-btn" onclick="togglePlayer()" id="toggleBtn">▼ Hide Player</button>
         <div class="track-info">
-            <img id="player-cover" src="https://via.placeholder.com/60" alt="Cover">
+            <img id="player-cover" src="" alt="Cover">
             <div>
                 <h4 id="player-title">Select a track</h4>
-                <p id="player-artist" style="font-size: 0.8rem; color: #ccc;">...</p>
+                <p id="player-artist" style="font-size: 0.8rem; color: #ccc;"></p>
             </div>
         </div>
         <div class="player-controls">
@@ -180,109 +193,118 @@
         </div>
     </div>
 
-<script>
-    // --- 1. NAVIGATION LOGIC (Safely separated) ---
-    function switchView(viewId) {
-        try {
-            // Hide all sections
-            document.querySelectorAll('.view-section').forEach(sec => {
-                sec.classList.remove('active');
-            });
-            // Show the target section
-            document.getElementById(viewId + '-view').classList.add('active');
+    <script>
+        // --- 1. ERROR HANDLING NOTIFICATIONS ---
+        function showToast(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = message;
+            container.appendChild(toast);
             
-            // Refresh songs if going home
-            if (viewId === 'home' && typeof fetchSongs === 'function') {
-                fetchSongs(); 
-            }
-        } catch (err) {
-            console.error("Navigation Error:", err);
-            alert("Something broke in the layout! Check the console.");
+            // Remove toast after 5 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
         }
-    }
 
-    // --- 2. SUPABASE CONFIGURATION ---
-    const SUPABASE_URL = "https://einlaadkrziqmjtsakzu.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpbmxhYWRrcnppcW1qdHNha3p1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNDkzNjgsImV4cCI6MjA5NTcyNTM2OH0.O72QUs345BrWvzHq6ZxpuhPlYffDqP8LEp1wIb2R8P4";
-    
-    let supabase;
-    try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } catch (err) {
-        console.error("Supabase failed to initialize. Are you connected to the internet?", err);
-    }
-
-    // --- 3. PLAYER LOGIC ---
-    const audioElement = document.getElementById('main-audio');
-    const coverImg = document.getElementById('player-cover');
-    const playerContainer = document.getElementById('bottom-player');
-    
-    function playTrack(title, artist, coverUrl, audioUrl) {
-        document.getElementById('player-title').innerText = title;
-        document.getElementById('player-artist').innerText = artist;
-        coverImg.src = coverUrl;
-        audioElement.src = audioUrl;
+        // --- 2. SUPABASE INITIALIZATION ---
+        const SUPABASE_URL = "https://einlaadkrziqmjtsakzu.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpbmxhYWRrcnppcW1qdHNha3p1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNDkzNjgsImV4cCI6MjA5NTcyNTM2OH0.O72QUs345BrWvzHq6ZxpuhPlYffDqP8LEp1wIb2R8P4";
         
-        playerContainer.classList.add('visible');
-        playerContainer.classList.remove('hidden');
-        document.getElementById('toggleBtn').innerText = "▼ Hide Player";
-        
-        audioElement.play();
-    }
+        let supabase;
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (err) {
+            showToast("Critical Error: Cannot connect to Supabase. Check your internet connection.");
+            console.error("Supabase Init Error:", err);
+        }
 
-    if (audioElement) {
+        // --- 3. UI VIEW SWITCHER ---
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(viewId + '-view').classList.add('active');
+            if (viewId === 'home') fetchSongs(); 
+        }
+
+        // --- 4. PLAYER LOGIC ---
+        const audioElement = document.getElementById('main-audio');
+        const coverImg = document.getElementById('player-cover');
+        const playerContainer = document.getElementById('bottom-player');
+        
+        function playTrack(title, artist, coverUrl, audioUrl) {
+            document.getElementById('player-title').innerText = title;
+            document.getElementById('player-artist').innerText = artist;
+            coverImg.src = coverUrl;
+            audioElement.src = audioUrl;
+            
+            playerContainer.classList.add('visible');
+            playerContainer.classList.remove('hidden');
+            document.getElementById('toggleBtn').innerText = "▼ Hide Player";
+            
+            audioElement.play().catch(e => showToast("Browser blocked auto-play. Click the play button."));
+        }
+
         audioElement.addEventListener('play', () => coverImg.classList.add('playing'));
         audioElement.addEventListener('pause', () => coverImg.classList.remove('playing'));
         audioElement.addEventListener('ended', () => coverImg.classList.remove('playing'));
-    }
 
-    function togglePlayer() {
-        if (playerContainer.classList.contains('hidden')) {
-            playerContainer.classList.remove('hidden');
-            document.getElementById('toggleBtn').innerText = "▼ Hide Player";
-        } else {
-            playerContainer.classList.add('hidden');
-            document.getElementById('toggleBtn').innerText = "▲ Show Player";
-        }
-    }
-
-    // --- 4. FETCH & RENDER SONGS ---
-    async function fetchSongs() {
-        if (!supabase) return;
-        const container = document.getElementById('musicContainer');
-        try {
-            const { data: songs, error } = await supabase.from('songs').select('*').order('created_at', { ascending: false });
-
-            if (error) throw error;
-            
-            if (songs.length === 0) { 
-                container.innerHTML = "<p>No tracks uploaded yet.</p>"; 
-                return; 
+        function togglePlayer() {
+            if (playerContainer.classList.contains('hidden')) {
+                playerContainer.classList.remove('hidden');
+                document.getElementById('toggleBtn').innerText = "▼ Hide Player";
+            } else {
+                playerContainer.classList.add('hidden');
+                document.getElementById('toggleBtn').innerText = "▲ Show Player";
             }
-
-            container.innerHTML = ""; 
-            songs.forEach(song => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <img src="${song.cover_url}" alt="Cover">
-                    <h3>${song.title}</h3>
-                    <p>${song.artist}</p>
-                    <button class="play-btn" onclick="playTrack('${song.title.replace(/'/g, "\\'")}', '${song.artist.replace(/'/g, "\\'")}', '${song.cover_url}', '${song.audio_url}')">
-                        ▶ Play Now
-                    </button>
-                `;
-                container.appendChild(card);
-            });
-        } catch (err) {
-            console.error("Database fetch error:", err);
-            container.innerHTML = "<p style='color: #ff007f;'>Could not load tracks. Check your Supabase database connection.</p>";
         }
-    }
 
-    // --- 5. UPLOAD LOGIC ---
-    const uploadForm = document.getElementById('uploadForm');
-    if (uploadForm) {
+        // --- 5. FETCH MUSIC (WITH ERROR CATCHING) ---
+        async function fetchSongs() {
+            if (!supabase) return;
+            const container = document.getElementById('musicContainer');
+            
+            try {
+                const { data: songs, error } = await supabase.from('songs').select('*').order('created_at', { ascending: false });
+
+                if (error) {
+                    throw new Error(`Database Error: ${error.message}`);
+                }
+                
+                if (!songs || songs.length === 0) { 
+                    container.innerHTML = "<p>No tracks uploaded yet. Go to the Upload tab!</p>"; 
+                    return; 
+                }
+
+                container.innerHTML = ""; 
+                songs.forEach(song => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    // Sanitize strings to prevent breaking HTML
+                    const safeTitle = song.title ? song.title.replace(/'/g, "\\'") : "Unknown";
+                    const safeArtist = song.artist ? song.artist.replace(/'/g, "\\'") : "Unknown";
+                    
+                    card.innerHTML = `
+                        <img src="${song.cover_url || 'https://via.placeholder.com/200'}" alt="Cover">
+                        <h3>${song.title}</h3>
+                        <p>${song.artist}</p>
+                        <button class="play-btn" onclick="playTrack('${safeTitle}', '${safeArtist}', '${song.cover_url}', '${song.audio_url}')">
+                            ▶ Play
+                        </button>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                showToast(err.message, "error");
+                container.innerHTML = `<p style="color:var(--error);">Failed to load library: ${err.message}</p>`;
+                console.error("Fetch Error:", err);
+            }
+        }
+
+        // --- 6. UPLOAD SYSTEM (WITH VALIDATION & ERROR TRACING) ---
+        const uploadForm = document.getElementById('uploadForm');
+        
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -290,49 +312,63 @@
             const loader = document.getElementById('loader');
             const loaderText = document.getElementById('loaderText');
             
-            form.style.display = 'none';
-            loader.style.display = 'block';
-
             const title = document.getElementById('title').value;
             const artist = document.getElementById('artist').value;
             const description = document.getElementById('description').value;
             const audioFile = document.getElementById('audioFile').files[0];
             const coverFile = document.getElementById('coverFile').files[0];
 
+            // 6a. Pre-Upload Validation (Error Prevention)
+            if (!audioFile) return showToast("Please select an audio file.");
+            if (!coverFile) return showToast("Please select a cover image.");
+            
+            // Check file sizes to prevent silent crashes (50MB Audio, 5MB Image)
+            if (audioFile.size > 50 * 1024 * 1024) return showToast("Audio file is too large! Must be under 50MB.");
+            if (coverFile.size > 5 * 1024 * 1024) return showToast("Cover art is too large! Must be under 5MB.");
+
+            // Start UI loading
+            form.style.display = 'none';
+            loader.style.display = 'block';
+
             try {
-                loaderText.innerText = "Transmitting Audio Frequencies...";
-                const audioPath = `audio/${Date.now()}_${audioFile.name}`;
+                // Step 1: Upload Audio
+                loaderText.innerText = "Transmitting Audio File...";
+                const audioPath = `audio/${Date.now()}_${audioFile.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
                 let { error: audioErr } = await supabase.storage.from('music-vault').upload(audioPath, audioFile);
-                if (audioErr) throw audioErr;
+                if (audioErr) throw new Error(`Storage blocked audio upload. Check RLS policies. Detailed error: ${audioErr.message}`);
                 const audioUrl = supabase.storage.from('music-vault').getPublicUrl(audioPath).data.publicUrl;
 
+                // Step 2: Upload Image
                 loaderText.innerText = "Painting Cover Art...";
-                const coverPath = `covers/${Date.now()}_${coverFile.name}`;
+                const coverPath = `covers/${Date.now()}_${coverFile.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
                 let { error: coverErr } = await supabase.storage.from('music-vault').upload(coverPath, coverFile);
-                if (coverErr) throw coverErr;
+                if (coverErr) throw new Error(`Storage blocked image upload. Detailed error: ${coverErr.message}`);
                 const coverUrl = supabase.storage.from('music-vault').getPublicUrl(coverPath).data.publicUrl;
 
+                // Step 3: Database Insert
                 loaderText.innerText = "Securing into Database...";
                 const { error: dbErr } = await supabase.from('songs').insert([
                     { title, artist, description, audio_url: audioUrl, cover_url: coverUrl }
                 ]);
-                if (dbErr) throw dbErr;
+                if (dbErr) throw new Error(`Database rejected the new song. Detailed error: ${dbErr.message}`);
 
-                alert("Track successfully published to the web!");
+                // Success!
+                showToast("Track successfully published!", "success");
                 form.reset();
-                switchView('home');
+                switchView('home'); 
+                
             } catch (err) {
-                console.error(err);
-                alert("Upload failed: " + err.message);
+                // If anything fails, show the exact error in a red toast and reset the form UI
+                console.error("Upload Process Error:", err);
+                showToast(err.message, "error");
             } finally {
                 form.style.display = 'block';
                 loader.style.display = 'none';
             }
         });
-    }
 
-    // Initialize App
-    fetchSongs();
-</script>
+        // Initialize App on first load
+        fetchSongs();
+    </script>
 </body>
 </html>
