@@ -1,7 +1,7 @@
 const SHEET_ID = '1dvgO64fHfjDxwMUKuW7Fvq_C8lgsJsF180md8d7Xofg';
 const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
 
-async function loadDippobieTracks() {
+async function loadDizzarTracks() {
     try {
         const response = await fetch(csvUrl);
         const data = await response.text();
