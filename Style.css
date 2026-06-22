@@ -1,0 +1,341 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: #0a0a0a;
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   NAVIGATION BAR
+   ========================================================================== */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #1f1f1f;
+    z-index: 1000;
+    padding: 1rem 1.5rem;
+}
+
+.nav-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    font-size: 1.3rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #fff;
+}
+
+.sponsor-badge {
+    background: #ff3e3e;
+    color: #fff !important;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem !important;
+    font-weight: bold !important;
+}
+
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+#hero {
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(circle at center, #1c1c1c 0%, #0a0a0a 100%);
+    padding: 0 1rem;
+}
+
+#hero h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+#hero p {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+/* ==========================================================================
+   FILIRU PAINTS AD SECTION
+   ========================================================================== */
+.sponsor-ad-section {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+.ad-card {
+    background: linear-gradient(135deg, #141414 0%, #0d0d0d 100%);
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+}
+
+.ad-tag {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #aaa;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.ad-card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.ad-card p {
+    color: #aaa;
+    font-size: 0.95rem;
+    max-width: 600px;
+    margin: 0 auto 1.5rem auto;
+    line-height: 1.5;
+}
+
+.ad-btn {
+    display: inline-block;
+    background: #ffffff;
+    color: #000000;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.ad-btn:hover {
+    transform: scale(1.03);
+    background: #e5e5e5;
+}
+
+/* ==========================================================================
+   MUSIC CONTAINER & CARDS
+   ========================================================================== */
+#music-container {
+    padding: 3rem 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+#music-container h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    border-left: 3px solid #ff3e3e;
+    padding-left: 8px;
+    letter-spacing: 1px;
+}
+
+.track-card {
+    background: #121212;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    transition: border-color 0.3s;
+}
+
+.track-card:hover {
+    border-color: #333;
+}
+
+.track-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.track-cover {
+    width: 65px;
+    height: 65px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+.track-details h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.1rem;
+}
+
+.track-details p {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.download-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: transparent;
+    color: #fff;
+    border: 1px solid #333;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.download-btn:hover {
+    background-color: #fff;
+    color: #000;
+    border-color: #fff;
+}
+
+/* ==========================================================================
+   MODAL (POP-UP) STYLES
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    padding: 20px;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-card {
+    background: #111111;
+    border: 1px solid #222;
+    padding: 2rem;
+    border-radius: 16px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    transform: translateY(30px);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-overlay.active .modal-card {
+    transform: translateY(0);
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+#modal-cover {
+    width: 140px;
+    height: 140px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+
+#modal-title { font-size: 1.3rem; margin-bottom: 0.2rem; }
+#modal-artist { color: #ff3e3e; font-weight: 600; margin-bottom: 1.5rem; font-size: 0.9rem; }
+
+.download-status { background: #161616; padding: 12px; border-radius: 6px; margin-bottom: 1rem; }
+.download-status p { font-size: 0.8rem; color: #888; margin-bottom: 8px; }
+.progress-container { width: 100%; background: #222; height: 4px; border-radius: 2px; overflow: hidden; }
+.progress-bar { width: 0%; height: 100%; background: #ff3e3e; }
+.modal-footer { font-size: 0.75rem; color: #444; }
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+footer {
+    border-top: 1px solid #1a1a1a;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    margin-top: 4rem;
+    background: #0d0d0d;
+}
+
+.footer-content p {
+    font-size: 0.8rem;
+    color: #555;
+}
+
+.footer-content .powered-by {
+    margin-top: 0.5rem;
+}
+
+.footer-content a {
+    color: #aaa;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.footer-content a:hover {
+    color: #ff3e3e;
+}
