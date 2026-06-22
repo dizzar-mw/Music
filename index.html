@@ -1,386 +1,717 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Dizzar Songs Official</title>
+    <title>Dizzar Official | Music, Videos & Exclusive Downloads</title>
+    <meta name="title" content="Dizzar Official | Music, Videos & Exclusive Downloads">
+    <meta name="description" content="The official home of Dizzar and Music Hunterz. Stream latest releases, watch official music videos, and unlock exclusive downloads.">
+    <meta name="keywords" content="Dizzar, Music Hunterz, Malawian Music, Afrobeat, Download Mp3, Music Video, Langa Ndi Fuso">
+    <meta name="author" content="Dizzar">
+    
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://your-github-username.github.io/your-repo-name/">
 
-<meta name="description" content="Official website of Dizzar">
-<meta name="robots" content="index,follow">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-github-username.github.io/your-repo-name/">
+    <meta property="og:title" content="Dizzar Official | Music & Videos">
+    <meta property="og:description" content="Stream the latest releases and watch official music videos from Dizzar.">
+    <meta property="og:image" content="./covers/over.jpg">
 
-<style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
-}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-body{
-background:#0d0d0d;
-color:white;
-min-height:100vh;
-}
+    <style>
+        /* CSS Variables for consistent theming */
+        :root {
+            --primary-color: #00e5ff;
+            --secondary-color: #ff007f;
+            --bg-color: #050505;
+            --surface-color: rgba(25, 25, 35, 0.6);
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+        }
 
-header{
-text-align:center;
-padding:30px;
-background:#000;
-border-bottom:1px solid #222;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
 
-header h1{
-font-size:2.5rem;
-}
+        body {
+            background: radial-gradient(circle at top left, #1a0b2e 0%, var(--bg-color) 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
 
-header p{
-color:#aaa;
-margin-top:10px;
-}
+        /* Animated Background Elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 20%;
+            left: 10%;
+            width: 300px;
+            height: 300px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.15;
+            z-index: -1;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: 20%;
+            right: 10%;
+            width: 300px;
+            height: 300px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.15;
+            z-index: -1;
+        }
 
-.socials{
-margin-top:15px;
-}
+        /* Header */
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+        }
 
-.socials a{
-display:inline-block;
-padding:10px 15px;
-margin:4px;
-background:#222;
-color:white;
-text-decoration:none;
-border-radius:8px;
-}
+        header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
 
-.container{
-max-width:900px;
-margin:auto;
-padding:20px;
-}
+        .socials {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
 
-.player{
-background:#161616;
-border-radius:20px;
-padding:20px;
-box-shadow:0 0 20px rgba(0,0,0,.4);
-}
+        .socials a {
+            color: var(--text-main);
+            background: var(--surface-color);
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 1.2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
 
-.cover{
-width:100%;
-height:300px;
-object-fit:cover;
-border-radius:15px;
-}
+        .socials a:hover {
+            background: var(--primary-color);
+            color: #000;
+            transform: translateY(-3px);
+        }
 
-.song-title{
-font-size:1.8rem;
-margin-top:15px;
-}
+        /* Layout Grid */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            flex: 1;
+        }
 
-.song-desc{
-color:#bbb;
-margin-top:5px;
-}
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
 
-.controls{
-display:flex;
-gap:10px;
-margin-top:20px;
-}
+        /* The Player (Glassmorphism) */
+        .player-wrapper {
+            background: var(--surface-color);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
 
-button{
-padding:12px 20px;
-border:none;
-border-radius:10px;
-background:#00aaff;
-color:white;
-cursor:pointer;
-}
+        /* Media Screen (Handles both Art and Video) */
+        .media-screen {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
 
-button:hover{
-opacity:.9;
-}
+        .media-screen img, .media-screen video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.5s ease;
+        }
 
-.progress{
-width:100%;
-margin-top:15px;
-}
+        .media-screen video {
+            opacity: 0;
+            pointer-events: none;
+        }
 
-input[type=range]{
-width:100%;
-}
+        .media-screen.is-video video {
+            opacity: 1;
+            z-index: 2;
+        }
+        
+        .media-screen.is-video img {
+            opacity: 0.3;
+            filter: blur(10px);
+        }
 
-.time{
-display:flex;
-justify-content:space-between;
-font-size:.9rem;
-color:#aaa;
-}
+        .song-info {
+            text-align: center;
+            margin: 20px 0;
+        }
 
-.volume{
-margin-top:15px;
-}
+        .song-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
 
-.download{
-display:inline-block;
-margin-top:15px;
-padding:12px 20px;
-background:#444;
-color:white;
-text-decoration:none;
-border-radius:10px;
-pointer-events:none;
-opacity:.5;
-}
+        .song-desc {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
 
-.playlist{
-margin-top:30px;
-}
+        /* Controls */
+        .controls-main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin: 20px 0;
+        }
 
-.track{
-padding:15px;
-background:#1d1d1d;
-margin-top:10px;
-border-radius:10px;
-cursor:pointer;
-}
+        .btn-control {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.track:hover{
-background:#2a2a2a;
-}
+        .btn-control:hover {
+            color: var(--primary-color);
+        }
 
-footer{
-text-align:center;
-padding:25px;
-color:#888;
-}
-</style>
+        .btn-play {
+            background: var(--primary-color);
+            color: #000;
+            font-size: 1.8rem;
+            width: 65px;
+            height: 65px;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+        }
+
+        .btn-play:hover {
+            background: var(--text-main);
+            color: #000;
+            transform: scale(1.05);
+        }
+
+        /* Sliders */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .time-display, .volume-icon {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            min-width: 40px;
+        }
+
+        /* Download Button */
+        .download-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: not-allowed;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn.unlocked {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 0, 127, 0.4);
+        }
+
+        .download-btn.unlocked:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Playlist */
+        .playlist-wrapper {
+            background: var(--surface-color);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .playlist-header {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .track-list {
+            overflow-y: auto;
+            max-height: 500px;
+            padding-right: 10px;
+        }
+
+        .track-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .track-list::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+
+        .track-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid transparent;
+        }
+
+        .track-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .track-item.active {
+            background: rgba(0, 229, 255, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .track-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .track-info {
+            flex: 1;
+        }
+
+        .track-info h4 {
+            font-size: 1rem;
+            margin-bottom: 3px;
+        }
+
+        .track-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .track-type {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
 
 <header>
-<h1>Dizzar Songs Official</h1>
-<p>Music Hunterz Official Website</p>
-
-<div class="socials">
-<a href="#">YouTube</a>
-<a href="#">TikTok</a>
-<a href="#">Facebook</a>
-<a href="#">Instagram</a>
-</div>
+    <h1>Dizzar Official</h1>
+    <p>Music Hunterz Worldwide</p>
+    <div class="socials">
+        <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+    </div>
 </header>
 
 <div class="container">
+    
+    <div class="player-wrapper">
+        <div class="media-screen" id="mediaScreen">
+            <img id="coverImage" src="./covers/over.jpg" alt="Album Cover">
+            <video id="videoPlayer" playsinline></video>
+        </div>
 
-<div class="player">
+        <div class="song-info">
+            <h2 id="songTitle" class="song-title">Loading...</h2>
+            <p id="songDesc" class="song-desc">...</p>
+        </div>
 
-<img id="cover" class="cover" src="covers/over.jpg">
+        <div class="slider-container">
+            <span class="time-display" id="currentTime">0:00</span>
+            <input type="range" id="seekSlider" value="0" step="0.1">
+            <span class="time-display" id="durationTime">0:00</span>
+        </div>
 
-<h2 id="title" class="song-title">Over</h2>
+        <div class="controls-main">
+            <button class="btn-control" onclick="player.prev()"><i class="fa-solid fa-backward-step"></i></button>
+            <button class="btn-control btn-play" id="playBtn" onclick="player.togglePlay()">
+                <i class="fa-solid fa-play" id="playIcon"></i>
+            </button>
+            <button class="btn-control" onclick="player.next()"><i class="fa-solid fa-forward-step"></i></button>
+        </div>
 
-<p id="desc" class="song-desc">
-Heart breaking song by Dizzar
-</p>
+        <div class="slider-container" style="justify-content: center; width: 60%; margin: 0 auto;">
+            <i class="fa-solid fa-volume-low volume-icon"></i>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+            <i class="fa-solid fa-volume-high volume-icon"></i>
+        </div>
 
-<audio id="audio"></audio>
+        <a id="downloadBtn" class="download-btn" href="#" download>
+            <i class="fa-solid fa-lock" id="dlIcon"></i> 
+            <span id="dlText">Listen 15 Seconds To Unlock</span>
+        </a>
+    </div>
 
-<div class="controls">
-<button onclick="player.playSong()">Play</button>
-<button onclick="player.pauseSong()">Pause</button>
-<button onclick="player.previous()">Prev</button>
-<button onclick="player.next()">Next</button>
-</div>
-
-<div class="progress">
-<input type="range" id="seek" value="0">
-</div>
-
-<div class="time">
-<span id="current">0:00</span>
-<span id="duration">0:00</span>
-</div>
-
-<div class="volume">
-Volume
-<input type="range" id="volume" min="0" max="100" value="100">
-</div>
-
-<a id="downloadBtn"
-class="download"
-href=""
-download>
-Listen 15 Seconds To Unlock Download
-</a>
-
-</div>
-
-<div class="playlist">
-<h2>Playlist</h2>
-
-<div id="playlist"></div>
-
-</div>
+    <div class="playlist-wrapper">
+        <h2 class="playlist-header">Up Next</h2>
+        <div class="track-list" id="playlistContainer">
+            </div>
+    </div>
 
 </div>
 
 <footer>
-© Dizzar Songs Official
+    &copy; <span id="year"></span> Dizzar Official. All Rights Reserved.
 </footer>
 
+<audio id="audioPlayer"></audio>
+
 <script>
+    document.getElementById('year').innerText = new Date().getFullYear();
 
-const songs = [
+    // The Master Media Array (Mix of Audio and Video)
+    // NOTE: Make absolutely sure the paths EXACTLY match your GitHub folders (case-sensitive)
+    const mediaLibrary = [
+        {
+            title: "Over",
+            artist: "Heart breaking song by Dizzar",
+            type: "audio",
+            cover: "./covers/over.jpg",
+            src: "./songs/over.mp3"
+        },
+        {
+            title: "Langa Ndi Fuso",
+            artist: "Music Hunterz collaboration",
+            type: "audio",
+            cover: "./covers/langa.jpg",
+            src: "./songs/langa.mp3"
+        },
+        // EXAMPLE OF A VIDEO TRACK (Just add your own paths)
+        {
+            title: "Dizzar Live Performance",
+            artist: "Official Music Video",
+            type: "video",
+            cover: "./covers/live-thumb.jpg", 
+            src: "./videos/live.mp4" 
+        }
+    ];
 
-{
-title:"Over",
-description:"Heart breaking song by Dizzar",
-cover:"covers/over.jpg",
-audio:"songs/over.mp3"
-},
+    class SmartPlayer {
+        constructor(library) {
+            this.library = library;
+            this.currentIndex = 0;
+            this.isPlaying = false;
+            
+            // DOM Elements
+            this.audioEl = document.getElementById('audioPlayer');
+            this.videoEl = document.getElementById('videoPlayer');
+            this.screen = document.getElementById('mediaScreen');
+            this.playIcon = document.getElementById('playIcon');
+            this.seekSlider = document.getElementById('seekSlider');
+            this.volSlider = document.getElementById('volumeSlider');
+            
+            // Active Engine (points to either audio or video element)
+            this.engine = this.audioEl; 
+            
+            // Download Logic vars
+            this.listenTimer = null;
+            this.secondsListened = 0;
+            this.unlockThreshold = 15;
+            this.isUnlocked = false;
 
-{
-title:"Langa Ndi Fuso",
-description:"Music Hunterz collaboration",
-cover:"covers/langa.jpg",
-audio:"songs/langa.mp3"
-}
+            this.init();
+        }
 
-];
+        init() {
+            this.renderPlaylist();
+            this.loadMedia(0);
+            this.setupListeners();
+        }
 
-class DizzarPlayer{
+        loadMedia(index) {
+            this.currentIndex = index;
+            const media = this.library[index];
 
-constructor(){
+            // Update UI Info
+            document.getElementById('songTitle').innerText = media.title;
+            document.getElementById('songDesc').innerText = media.artist;
+            document.getElementById('coverImage').src = media.cover;
 
-this.audio=document.getElementById("audio");
-this.index=0;
+            // Reset Download Button
+            this.resetDownload(media.src);
 
-this.load(this.index);
+            // Engine Switcher logic
+            this.pause(); 
+            if (media.type === 'video') {
+                this.screen.classList.add('is-video');
+                this.engine = this.videoEl;
+            } else {
+                this.screen.classList.remove('is-video');
+                this.engine = this.audioEl;
+            }
 
-this.audio.addEventListener("timeupdate",()=>{
+            // Load source into correct engine
+            this.engine.src = media.src;
+            this.engine.load();
+            this.updateActivePlaylistItem();
+            
+            // Re-bind engine timeupdate
+            this.engine.onloadedmetadata = () => {
+                this.seekSlider.max = this.engine.duration;
+                document.getElementById('durationTime').innerText = this.formatTime(this.engine.duration);
+            };
+        }
 
-let current=this.audio.currentTime;
-let duration=this.audio.duration||0;
+        togglePlay() {
+            if (this.isPlaying) {
+                this.pause();
+            } else {
+                this.play();
+            }
+        }
 
-document.getElementById("seek").value=
-(current/duration)*100||0;
+        play() {
+            this.engine.play();
+            this.isPlaying = true;
+            this.playIcon.classList.replace('fa-play', 'fa-pause');
+            this.startListenTimer();
+        }
 
-document.getElementById("current").innerText=
-this.format(current);
+        pause() {
+            this.engine.pause();
+            this.isPlaying = false;
+            this.playIcon.classList.replace('fa-pause', 'fa-play');
+            clearInterval(this.listenTimer);
+        }
 
-document.getElementById("duration").innerText=
-this.format(duration);
+        next() {
+            let nextIndex = this.currentIndex + 1;
+            if (nextIndex >= this.library.length) nextIndex = 0;
+            this.loadMedia(nextIndex);
+            this.play();
+        }
 
-});
+        prev() {
+            let prevIndex = this.currentIndex - 1;
+            if (prevIndex < 0) prevIndex = this.library.length - 1;
+            this.loadMedia(prevIndex);
+            this.play();
+        }
 
-this.audio.addEventListener("ended",()=>{
-this.next();
-});
+        // --- Smart Event Listeners ---
+        setupListeners() {
+            // Seek control
+            this.seekSlider.addEventListener('input', () => {
+                this.engine.currentTime = this.seekSlider.value;
+            });
 
-}
+            // Volume control (syncs both hidden audio and video engines)
+            this.volSlider.addEventListener('input', (e) => {
+                const vol = e.target.value;
+                this.audioEl.volume = vol;
+                this.videoEl.volume = vol;
+            });
 
-load(index){
+            // Time Tracking (applied to both elements)
+            const updateTime = (e) => {
+                if (e.target !== this.engine) return; // Only update if it's the active engine
+                this.seekSlider.value = this.engine.currentTime;
+                document.getElementById('currentTime').innerText = this.formatTime(this.engine.currentTime);
+            };
 
-const song=songs[index];
+            this.audioEl.addEventListener('timeupdate', updateTime);
+            this.videoEl.addEventListener('timeupdate', updateTime);
 
-document.getElementById("title").innerText=song.title;
-document.getElementById("desc").innerText=song.description;
-document.getElementById("cover").src=song.cover;
+            // Auto-next on end
+            const onEnd = (e) => {
+                if (e.target !== this.engine) return;
+                this.next();
+            };
+            this.audioEl.addEventListener('ended', onEnd);
+            this.videoEl.addEventListener('ended', onEnd);
+        }
 
-this.audio.src=song.audio;
+        // --- Unlock logic ---
+        startListenTimer() {
+            if (this.isUnlocked) return;
+            clearInterval(this.listenTimer);
+            this.listenTimer = setInterval(() => {
+                this.secondsListened++;
+                if (this.secondsListened >= this.unlockThreshold) {
+                    this.unlockDownload();
+                }
+            }, 1000);
+        }
 
-const btn=document.getElementById("downloadBtn");
+        resetDownload(fileSrc) {
+            this.isUnlocked = false;
+            this.secondsListened = 0;
+            clearInterval(this.listenTimer);
+            const btn = document.getElementById('downloadBtn');
+            btn.href = "#";
+            btn.className = "download-btn";
+            document.getElementById('dlIcon').classList.replace('fa-download', 'fa-lock');
+            document.getElementById('dlText').innerText = "Listen 15 Seconds To Unlock";
+            
+            // Store target src for when unlocked
+            btn.dataset.targetSrc = fileSrc;
+        }
 
-btn.href=song.audio;
-btn.style.pointerEvents="none";
-btn.style.opacity=".5";
-btn.innerText="Listen 15 Seconds To Unlock Download";
+        unlockDownload() {
+            this.isUnlocked = true;
+            clearInterval(this.listenTimer);
+            const btn = document.getElementById('downloadBtn');
+            btn.href = btn.dataset.targetSrc;
+            btn.className = "download-btn unlocked";
+            document.getElementById('dlIcon').classList.replace('fa-lock', 'fa-download');
+            document.getElementById('dlText').innerText = "Download Now";
+        }
 
-setTimeout(()=>{
-btn.style.pointerEvents="auto";
-btn.style.opacity="1";
-btn.innerText="Download Song";
-},15000);
+        // --- UI Helpers ---
+        formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            let min = Math.floor(seconds / 60);
+            let sec = Math.floor(seconds % 60);
+            return `${min}:${sec < 10 ? '0' + sec : sec}`;
+        }
 
-}
+        renderPlaylist() {
+            const container = document.getElementById('playlistContainer');
+            container.innerHTML = '';
+            this.library.forEach((media, index) => {
+                const iconClass = media.type === 'video' ? 'fa-video' : 'fa-music';
+                const div = document.createElement('div');
+                div.className = `track-item ${index === this.currentIndex ? 'active' : ''}`;
+                div.onclick = () => {
+                    this.loadMedia(index);
+                    this.play();
+                };
+                div.innerHTML = `
+                    <img src="${media.cover}" class="track-thumb">
+                    <div class="track-info">
+                        <h4>${media.title}</h4>
+                        <p>${media.artist}</p>
+                    </div>
+                    <div class="track-type"><i class="fa-solid ${iconClass}"></i></div>
+                `;
+                container.appendChild(div);
+            });
+        }
 
-playSong(){
-this.audio.play();
-}
+        updateActivePlaylistItem() {
+            const items = document.querySelectorAll('.track-item');
+            items.forEach((item, idx) => {
+                if (idx === this.currentIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+    }
 
-pauseSong(){
-this.audio.pause();
-}
-
-next(){
-
-this.index++;
-
-if(this.index>=songs.length){
-this.index=0;
-}
-
-this.load(this.index);
-this.playSong();
-
-}
-
-previous(){
-
-this.index--;
-
-if(this.index<0){
-this.index=songs.length-1;
-}
-
-this.load(this.index);
-this.playSong();
-
-}
-
-format(time){
-
-let mins=Math.floor(time/60);
-let secs=Math.floor(time%60);
-
-if(secs<10){
-secs="0"+secs;
-}
-
-return mins+":"+secs;
-
-}
-
-}
-
-const player=new DizzarPlayer();
-
-document.getElementById("volume")
-.addEventListener("input",e=>{
-player.audio.volume=e.target.value/100;
-});
-
-document.getElementById("seek")
-.addEventListener("input",e=>{
-
-let seek=e.target.value;
-
-player.audio.currentTime=
-(player.audio.duration*seek)/100;
-
-});
-
-const playlist=document.getElementById("playlist");
-
-songs.forEach((song,index)=>{
-
-playlist.innerHTML+=`
-<div class="track" onclick="player.index=${index};player.load(${index});player.playSong();">
-${song.title}
-</div>
-`;
-
-});
+    // Initialize Application
+    const player = new SmartPlayer(mediaLibrary);
 
 </script>
 
