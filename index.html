@@ -421,7 +421,7 @@
     
     <div class="player-wrapper">
         <div class="media-screen" id="mediaScreen">
-            <img id="coverImage" src="./covers/over.jpg" alt="Album Cover">
+            <img id="coverImage" src="" alt="Album Cover">
             <video id="videoPlayer" playsinline></video>
         </div>
 
@@ -472,33 +472,6 @@
 
 <script>
     document.getElementById('year').innerText = new Date().getFullYear();
-
-    // The Master Media Array (Mix of Audio and Video)
-    // NOTE: Make absolutely sure the paths EXACTLY match your GitHub folders (case-sensitive)
-    const mediaLibrary = [
-        {
-            title: "Over",
-            artist: "Heart breaking song by Dizzar",
-            type: "audio",
-            cover: "./covers/over.jpg",
-            src: "./songs/over.mp3"
-        },
-        {
-            title: "Langa Ndi Fuso",
-            artist: "Music Hunterz collaboration",
-            type: "audio",
-            cover: "./covers/langa.jpg",
-            src: "./songs/langa.mp3"
-        },
-        // EXAMPLE OF A VIDEO TRACK (Just add your own paths)
-        {
-            title: "Dizzar Live Performance",
-            artist: "Official Music Video",
-            type: "video",
-            cover: "./covers/live-thumb.jpg", 
-            src: "./videos/live.mp4" 
-        }
-    ];
 
     class SmartPlayer {
         constructor(library) {
@@ -714,10 +687,50 @@
         }
     }
 
-    // Initialize Application
-    const player = new SmartPlayer(mediaLibrary);
+    // Dynamic GitHub Loading Script
+    async function loadDynamicLibrary() {
+        try {
+            const repo = 'dizzar-mw/Music'; 
+            const response = await fetch(`https://api.github.com/repos/${repo}/contents/songs`);
+            
+            if (!response.ok) throw new Error("Could not fetch songs from GitHub");
+            
+            const files = await response.json();
+            const dynamicLibrary = [];
+
+            for (const file of files) {
+                if (file.name.endsWith('.mp3')) {
+                    const fileNameNoExt = file.name.replace('.mp3', '');
+                    const formattedTitle = fileNameNoExt.charAt(0).toUpperCase() + fileNameNoExt.slice(1);
+
+                    dynamicLibrary.push({
+                        title: formattedTitle,
+                        artist: "Dizzar | Music Hunterz",
+                        type: "audio",
+                        cover: `./covers/${fileNameNoExt}.jpg`,
+                        src: file.download_url
+                    });
+                }
+            }
+            
+            if (dynamicLibrary.length > 0) {
+                // Initialize Application with dynamic list
+                window.player = new SmartPlayer(dynamicLibrary);
+            } else {
+                document.getElementById('songTitle').innerText = "No songs found.";
+            }
+
+        } catch (error) {
+            console.error("Error loading music:", error);
+            document.getElementById('songTitle').innerText = "Error loading music";
+            document.getElementById('songDesc').innerText = "Check console for details";
+        }
+    }
+
+    // Start everything up
+    loadDynamicLibrary();
 
 </script>
 
 </body>
-</html>
+    </html>
